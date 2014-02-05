@@ -148,7 +148,7 @@ public class S3UploadMojo extends AbstractMojo {
 				updatePermissions(s3, sourceFile.getCanonicalPath().replace(localPrefix, keyPrefix));
 			} else {
 				for(File f:sourceFile.listFiles()){
-					updatePermissions(s3, f, f.getCanonicalPath(), keyPrefix+f.getName());
+					updatePermissions(s3, f, f.getCanonicalPath(), keyPrefix.replaceAll("([^/])/*$","$1/")+f.getName());
 				}
 			}
 		}catch(IOException ioe){
@@ -170,7 +170,7 @@ public class S3UploadMojo extends AbstractMojo {
 				updateMetadatas(s3, sourceFile.getCanonicalPath().replace(localPrefix, keyPrefix));
 			} else {
 				for(File f:sourceFile.listFiles()){
-					updateMetadatas(s3, f, f.getCanonicalPath(), keyPrefix+f.getName());
+					updateMetadatas(s3, f, f.getCanonicalPath(), keyPrefix.replaceAll("([^/])/*$","$1/")+f.getName());
 				}
 			}
 		}catch(IOException ioe){
@@ -179,37 +179,9 @@ public class S3UploadMojo extends AbstractMojo {
 	}
 
 	private void updateMetadatas(AmazonS3 s3, String key) throws MojoExecutionException {
+		System.out.println("Updating metadatas for '"+key+"' in bucket '"+bucketName);
 		S3Object s3o = s3.getObject(bucketName, key);
 		for (Metadata m: metadatas) {
-			
-//			if(m.getKey().equalsIgnoreCase("content-type")){
-//				s3o.getObjectMetadata().setContentType(m.getValue());
-//			} else if(m.getKey().equalsIgnoreCase("cache-control")){
-//				s3o.getObjectMetadata().setCacheControl(m.getValue());
-//			} else if(m.getKey().equalsIgnoreCase("content-disposition")){
-//				s3o.getObjectMetadata().setContentDisposition(m.getValue());
-//			} else if(m.getKey().equalsIgnoreCase("content-encoding")){
-//				s3o.getObjectMetadata().setContentEncoding(m.getValue());
-//			} else if(m.getKey().equalsIgnoreCase("content-length")) {
-//				try{
-//					s3o.getObjectMetadata().setContentLength(new Long(m.getValue()));
-//				} catch (NumberFormatException e) {
-//					throw new MojoExecutionException("ContentLength must be a long value",e);
-//				}
-//			} else if(m.getKey().equalsIgnoreCase("content-md5")){
-//				s3o.getObjectMetadata().setContentMD5(m.getValue());
-//			} else if(m.getKey().equalsIgnoreCase("expiration-time")){
-//				try{
-//					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-//					s3o.getObjectMetadata().setExpirationTime(sdf.parse(m.getValue()));
-//				} catch (ParseException e) {
-//					throw new MojoExecutionException("ExpirationTime must be in format 'yyyy-MM-dd'",e);
-//				}
-//			} else if(m.getKey().equalsIgnoreCase("content-md5")){
-//				s3o.getObjectMetadata().setLastModified(lastModified)
-//			} else {
-//				s3o.getObjectMetadata().addUserMetadata(m.getKey(), m.getValue());
-//			}
 			s3o.getObjectMetadata().setHeader(m.getKey(), m.getValue());
 		}
 		s3.putObject(bucketName, key, s3o.getObjectContent(), s3o.getObjectMetadata());
