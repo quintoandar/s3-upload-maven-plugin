@@ -179,7 +179,6 @@ public class S3UploadMojo extends AbstractMojo {
 	}
 
 	private void updateMetadatas(AmazonS3 s3, String key) throws MojoExecutionException {
-		System.out.println("Updating metadatas for '"+key+"' in bucket '"+bucketName);
 		S3Object s3o = s3.getObject(bucketName, key);
 		for (Metadata m: metadatas) {
 			s3o.getObjectMetadata().setHeader(m.getKey(), m.getValue());
