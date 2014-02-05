@@ -2,6 +2,9 @@ package com.bazaarvoice.maven.plugins.s3.upload;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -123,11 +126,11 @@ public class S3UploadMojo extends AbstractMojo {
 			getLog().info("Transferred " + transfer.getProgress().getBytesTransfered() + " bytes.");
 
 			try {
-				if(permissions != null && permissions.size() > 0){
-					updatePermissions(s3,sourceFile,sourceFile.getCanonicalPath(),destination);
-				}
 				if(metadatas != null && metadatas.size() > 0){
 					updateMetadatas(s3, sourceFile,sourceFile.getCanonicalPath(),destination);
+				}
+				if(permissions != null && permissions.size() > 0){
+					updatePermissions(s3,sourceFile,sourceFile.getCanonicalPath(),destination);
 				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Error getting file canonicalPath when updating permissions/metadatas",e);
@@ -175,12 +178,39 @@ public class S3UploadMojo extends AbstractMojo {
 		}
 	}
 
-	private void updateMetadatas(AmazonS3 s3, String key) {
-		System.out.println("\t\t\tUpdating Metadata for '"+key+"' in bucket '"+bucketName+"'");
+	private void updateMetadatas(AmazonS3 s3, String key) throws MojoExecutionException {
 		S3Object s3o = s3.getObject(bucketName, key);
 		for (Metadata m: metadatas) {
-			System.out.println("\t\t\t\tUpdating Metadata '"+m.getKey()+"' = '"+m.getValue()+"'");
-			s3o.getObjectMetadata().addUserMetadata(m.getKey(), m.getValue());
+			
+//			if(m.getKey().equalsIgnoreCase("content-type")){
+//				s3o.getObjectMetadata().setContentType(m.getValue());
+//			} else if(m.getKey().equalsIgnoreCase("cache-control")){
+//				s3o.getObjectMetadata().setCacheControl(m.getValue());
+//			} else if(m.getKey().equalsIgnoreCase("content-disposition")){
+//				s3o.getObjectMetadata().setContentDisposition(m.getValue());
+//			} else if(m.getKey().equalsIgnoreCase("content-encoding")){
+//				s3o.getObjectMetadata().setContentEncoding(m.getValue());
+//			} else if(m.getKey().equalsIgnoreCase("content-length")) {
+//				try{
+//					s3o.getObjectMetadata().setContentLength(new Long(m.getValue()));
+//				} catch (NumberFormatException e) {
+//					throw new MojoExecutionException("ContentLength must be a long value",e);
+//				}
+//			} else if(m.getKey().equalsIgnoreCase("content-md5")){
+//				s3o.getObjectMetadata().setContentMD5(m.getValue());
+//			} else if(m.getKey().equalsIgnoreCase("expiration-time")){
+//				try{
+//					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+//					s3o.getObjectMetadata().setExpirationTime(sdf.parse(m.getValue()));
+//				} catch (ParseException e) {
+//					throw new MojoExecutionException("ExpirationTime must be in format 'yyyy-MM-dd'",e);
+//				}
+//			} else if(m.getKey().equalsIgnoreCase("content-md5")){
+//				s3o.getObjectMetadata().setLastModified(lastModified)
+//			} else {
+//				s3o.getObjectMetadata().addUserMetadata(m.getKey(), m.getValue());
+//			}
+			s3o.getObjectMetadata().setHeader(m.getKey(), m.getValue());
 		}
 		s3.putObject(bucketName, key, s3o.getObjectContent(), s3o.getObjectMetadata());
 	}

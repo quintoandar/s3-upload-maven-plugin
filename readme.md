@@ -63,3 +63,41 @@ Example: Recursively upload a folder
 </build>
 ```
 
+Example: Upload setting metadata and permissions
+------------------------------------
+```xml
+<build>
+  ...
+
+  <plugins>
+    ...
+
+    <plugin>
+      <groupId>com.bazaarvoice.maven.plugins</groupId>
+      <artifactId>s3-upload-maven-plugin</artifactId>
+      <version>1.0</version>
+      <configuration>
+        <bucketName>my-s3-bucket</bucketName>
+        <source>dir</source>
+        <destination>remote-dir</destination>
+        <recursive>true</recursive>
+	<permissions>
+          <permission>
+            <grantee>Everyone</grantee><!-- S3 Values || email || others -->
+            <download>true</download>
+            <viewPermission>true</viewPermission><!-- optional;default false -->
+            <editPermission>true</editPermission><!-- optional;default false -->
+          </permission>
+        </permissions>
+        <metadatas>
+          <metadata>
+            <key>Content-Type</key>
+            <value>application/x-javascript</value>
+          </metadata>
+        </metadatas>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+```
+
