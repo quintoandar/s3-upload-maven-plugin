@@ -13,6 +13,10 @@ public class Permission implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * AWS Grantee.
+	 */
+	@Parameter
 	private String grantee;
 
 	@Parameter(defaultValue = "true")

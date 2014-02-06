@@ -41,6 +41,12 @@ public class S3UploadMojo extends AbstractMojo {
 	@Parameter(property = "s3-upload.doNotUpload", defaultValue = "false")
 	private boolean doNotUpload;
 
+	/**
+	 * Skips execution
+	 */
+	@Parameter(property = "s3-upload.skip", defaultValue = "false")
+	private boolean skip;
+
 	/** The file/folder to upload. */
 	@Parameter(property = "s3-upload.source", required = true)
 	private String source;
@@ -69,6 +75,10 @@ public class S3UploadMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException {
+		if (skip) {
+			getLog().info("Skipping S3UPload");
+			return;
+		}
 		File sourceFile = new File(source);
 		if (!sourceFile.exists()) {
 			throw new MojoExecutionException("File/folder doesn't exist: " + source);
@@ -181,7 +191,9 @@ public class S3UploadMojo extends AbstractMojo {
 	private void updateMetadatas(AmazonS3 s3, String key) throws MojoExecutionException {
 		S3Object s3o = s3.getObject(bucketName, key);
 		for (Metadata m: metadatas) {
-			s3o.getObjectMetadata().setHeader(m.getKey(), m.getValue());
+			if(m.shouldSetMetadata(key)){
+				s3o.getObjectMetadata().setHeader(m.getKey(), m.getValue());
+			}
 		}
 		s3.putObject(bucketName, key, s3o.getObjectContent(), s3o.getObjectMetadata());
 	}
