@@ -93,6 +93,7 @@ Example: Upload setting metadata and permissions
       <artifactId>s3-upload-maven-plugin</artifactId>
       <version>1.0</version>
       <configuration>
+        <skip>false</skip> <!-- may be used to skip execution, useful when pom has lots of conditions -->
         <bucketName>my-s3-bucket</bucketName>
         <source>dir</source>
         <destination>remote-dir</destination>
@@ -109,6 +110,7 @@ Example: Upload setting metadata and permissions
           <metadata>
             <key>Content-Type</key>
             <value>application/x-javascript</value>
+            <matches>\\.js$</matches><!-- Regex used to match file types when applying metadata -->
           </metadata>
         </metadatas>
       </configuration>
