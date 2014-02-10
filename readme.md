@@ -4,15 +4,15 @@ s3-upload-maven-plugin
 Uses this snapshot temporarly if you want to have metadatas and properties functionality:
 ----------------------
 ```xml
-<repository>
+<pluginRepository>
   <id>mpereiraqa s3-upload-maven-plugin</id>
-  <url>https://raw.github.com/mpereiraqa/s3-upload-maven-plugin/master/mvn-repo/</url>
+  <url>https://raw.github.com/mpereiraqa/s3-upload-maven-plugin/master/mvn-repo</url>
   <!-- use snapshot version -->
   <snapshots>
     <enabled>true</enabled>
     <updatePolicy>always</updatePolicy>
   </snapshots>
-</repository>
+</pluginRepository>
 ```
 
 ======================
