@@ -5,8 +5,8 @@ Uses this snapshot temporarly if you want to have metadatas and properties funct
 ----------------------
 ```xml
 <pluginRepository>
-  <id>mpereiraqa s3-upload-maven-plugin</id>
-  <url>https://raw.github.com/mpereiraqa/s3-upload-maven-plugin/master/mvn-repo</url>
+  <id>moacyrricardo s3-upload-maven-plugin</id>
+  <url>https://raw.github.com/moacyrricardo/s3-upload-maven-plugin/master/mvn-repo</url>
   <!-- use snapshot version -->
   <snapshots>
     <enabled>true</enabled>
