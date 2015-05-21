@@ -157,8 +157,10 @@ public class S3UploadMojo extends AbstractMojo {
 			if (sourceFile.isFile()) {
 				updatePermissions(s3, sourceFile.getCanonicalPath().replace(localPrefix, keyPrefix));
 			} else {
-				for(File f:sourceFile.listFiles()){
-					updatePermissions(s3, f, f.getCanonicalPath(), keyPrefix.replaceAll("([^/])/*$","$1/")+f.getName());
+				if(recursive){
+					for(File f:sourceFile.listFiles()){
+						updatePermissions(s3, f, f.getCanonicalPath(), keyPrefix.replaceAll("([^"+File.separatorChar+"])"+File.separatorChar+"*$","$1"+File.separatorChar)+f.getName());
+					}
 				}
 			}
 		}catch(IOException ioe){
@@ -166,6 +168,7 @@ public class S3UploadMojo extends AbstractMojo {
 		}
 	}
 	private void updatePermissions(AmazonS3 s3, String key) {
+		getLog().debug("Updating permissions for key: "+key);
 		AccessControlList acl = s3.getObjectAcl(bucketName, key);
 		for(Permission p :permissions){
 			acl.grantPermission(p.getAsGrantee(), p.getPermission());
@@ -179,8 +182,10 @@ public class S3UploadMojo extends AbstractMojo {
 			if (sourceFile.isFile()) {
 				updateMetadatas(s3, sourceFile.getCanonicalPath().replace(localPrefix, keyPrefix));
 			} else {
-				for(File f:sourceFile.listFiles()){
-					updateMetadatas(s3, f, f.getCanonicalPath(), keyPrefix.replaceAll("([^/])/*$","$1/")+f.getName());
+				if(recursive){
+					for(File f:sourceFile.listFiles()){
+						updateMetadatas(s3, f, f.getCanonicalPath(), keyPrefix.replaceAll("([^/])/*$","$1/")+f.getName());
+					}
 				}
 			}
 		}catch(IOException ioe){
@@ -189,6 +194,7 @@ public class S3UploadMojo extends AbstractMojo {
 	}
 
 	private void updateMetadatas(AmazonS3 s3, String key) throws MojoExecutionException {
+		getLog().debug("Updating Metadata for key: "+key);
 		S3Object s3o = s3.getObject(bucketName, key);
 		for (Metadata m: metadatas) {
 			if(m.shouldSetMetadata(key)){

@@ -1,14 +1,9 @@
-target
-test-output
+target/
+test-output/
 .idea
 .DS_Store
 *.iml
 *.ipr
 *.iws
 *.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
 
